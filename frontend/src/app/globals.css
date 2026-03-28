@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f1f5f9;
+  --foreground: #0f172a;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    color: var(--foreground);
+    background: var(--background);
+  }
+
+  @media (min-width: 768px) {
+    body {
+      background: linear-gradient(165deg, #e2e8f0 0%, #f1f5f9 45%, #f8fafc 100%);
+      background-attachment: fixed;
+    }
+  }
+}
+
+@layer components {
+  .input-field {
+    @apply w-full min-h-[44px] rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-slate-900 text-sm
+      shadow-sm transition placeholder:text-slate-400
+      focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20;
+  }
+
+  .btn-primary {
+    @apply inline-flex min-h-[44px] items-center justify-center rounded-xl bg-gradient-to-br from-brand to-brand-dark px-5 py-2.5
+      text-sm font-semibold text-white shadow-md shadow-brand/25 transition
+      hover:brightness-105 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex min-h-[44px] items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5
+      text-sm font-semibold text-slate-700 shadow-sm transition
+      hover:border-slate-300 hover:bg-slate-50 active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-slate-600 transition
+      hover:bg-slate-100 active:bg-slate-200;
+  }
+
+  .card-surface {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-card;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .pb-safe {
+    padding-bottom: calc(1rem + var(--safe-bottom));
+  }
+}
