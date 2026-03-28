@@ -1,7 +1,7 @@
 import { getToken, clearSession } from "./auth-storage";
 
-const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-
+// const base = process.env.NEXT_PUBLIC_API_URL || "https://test-backend-binary-dot-technologie.vercel.app/api";
+const base = "https://test-backend-binary-dot-technologie.vercel.app/api";
 export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) {
