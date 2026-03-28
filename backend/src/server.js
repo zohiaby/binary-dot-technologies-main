@@ -12,14 +12,15 @@ const dashboardRoutes = require("./routes/dashboard");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allow any Origin (reflects request Origin; works with credentials: true — cannot use '*')
+// Open CORS: any domain, any typical API headers (JWT uses Authorization; no cookies)
 app.use(
   cors({
-    origin: true,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: "*",
+    credentials: false,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+    // Omit allowedHeaders → reflect Access-Control-Request-Headers from the browser (most permissive)
     optionsSuccessStatus: 204,
+    maxAge: 86_400,
   }),
 );
 app.use(express.json());
@@ -46,7 +47,7 @@ async function start() {
   await connectDB();
   app.listen(PORT, () => {
     console.log(`API listening on http://localhost:${PORT}`);
-    console.log("CORS: all origins allowed (origin: true)");
+    console.log("CORS: Access-Control-Allow-Origin * (all domains)");
   });
 }
 

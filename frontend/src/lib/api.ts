@@ -12,18 +12,27 @@ export class ApiError extends Error {
 
 async function request<T>(
   path: string,
-  options: RequestInit & { skipAuth?: boolean } = {}
+  options: RequestInit & { skipAuth?: boolean } = {},
 ): Promise<T> {
   const { skipAuth, headers: initHeaders, ...rest } = options;
   const headers = new Headers(initHeaders);
-  if (!headers.has("Content-Type") && rest.body && typeof rest.body === "string") {
+  if (
+    !headers.has("Content-Type") &&
+    rest.body &&
+    typeof rest.body === "string"
+  ) {
     headers.set("Content-Type", "application/json");
   }
   if (!skipAuth) {
     const token = getToken();
     if (token) headers.set("Authorization", `Bearer ${token}`);
   }
-  const res = await fetch(`${base}${path}`, { ...rest, headers });
+  const res = await fetch(`${base}${path}`, {
+    ...rest,
+    headers,
+    mode: "cors",
+    credentials: "omit",
+  });
   const text = await res.text();
   let data: unknown = null;
   if (text) {
@@ -48,43 +57,76 @@ async function request<T>(
 
 export const api = {
   login: (body: { email: string; password: string }) =>
-    request<{ token: string; admin: { id: string; name: string; email: string } }>(
-      "/auth/login",
-      { method: "POST", body: JSON.stringify(body), skipAuth: true }
-    ),
+    request<{
+      token: string;
+      admin: { id: string; name: string; email: string };
+    }>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(body),
+      skipAuth: true,
+    }),
   signup: (body: { name: string; email: string; password: string }) =>
-    request<{ token: string; admin: { id: string; name: string; email: string } }>(
-      "/auth/signup",
-      { method: "POST", body: JSON.stringify(body), skipAuth: true }
-    ),
-  me: () => request<{ admin: { id: string; name: string; email: string } }>("/auth/me"),
+    request<{
+      token: string;
+      admin: { id: string; name: string; email: string };
+    }>("/auth/signup", {
+      method: "POST",
+      body: JSON.stringify(body),
+      skipAuth: true,
+    }),
+  me: () =>
+    request<{ admin: { id: string; name: string; email: string } }>("/auth/me"),
 
   customers: {
     list: () => request<Customer[]>("/customers"),
     get: (id: string) => request<Customer>(`/customers/${id}`),
     create: (body: Partial<Customer>) =>
-      request<Customer>("/customers", { method: "POST", body: JSON.stringify(body) }),
+      request<Customer>("/customers", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
     update: (id: string, body: Partial<Customer>) =>
-      request<Customer>(`/customers/${id}`, { method: "PUT", body: JSON.stringify(body) }),
-    remove: (id: string) => request<{ message: string }>(`/customers/${id}`, { method: "DELETE" }),
+      request<Customer>(`/customers/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    remove: (id: string) =>
+      request<{ message: string }>(`/customers/${id}`, { method: "DELETE" }),
   },
   vehicles: {
     list: () => request<Vehicle[]>("/vehicles"),
     get: (id: string) => request<Vehicle>(`/vehicles/${id}`),
     create: (body: Partial<Vehicle>) =>
-      request<Vehicle>("/vehicles", { method: "POST", body: JSON.stringify(body) }),
+      request<Vehicle>("/vehicles", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
     update: (id: string, body: Partial<Vehicle>) =>
-      request<Vehicle>(`/vehicles/${id}`, { method: "PUT", body: JSON.stringify(body) }),
-    remove: (id: string) => request<{ message: string }>(`/vehicles/${id}`, { method: "DELETE" }),
+      request<Vehicle>(`/vehicles/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    remove: (id: string) =>
+      request<{ message: string }>(`/vehicles/${id}`, { method: "DELETE" }),
   },
   bookings: {
     list: () => request<Booking[]>("/bookings"),
     get: (id: string) => request<Booking>(`/bookings/${id}`),
     create: (body: BookingInput) =>
-      request<Booking>("/bookings", { method: "POST", body: JSON.stringify(body) }),
-    update: (id: string, body: Partial<BookingInput> & { status?: Booking["status"] }) =>
-      request<Booking>(`/bookings/${id}`, { method: "PUT", body: JSON.stringify(body) }),
-    remove: (id: string) => request<{ message: string }>(`/bookings/${id}`, { method: "DELETE" }),
+      request<Booking>("/bookings", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    update: (
+      id: string,
+      body: Partial<BookingInput> & { status?: Booking["status"] },
+    ) =>
+      request<Booking>(`/bookings/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+    remove: (id: string) =>
+      request<{ message: string }>(`/bookings/${id}`, { method: "DELETE" }),
   },
   dashboard: {
     stats: () =>
